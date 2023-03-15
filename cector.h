@@ -10,41 +10,51 @@ typedef struct Cector
 } Cector;
 
 
-void Cector_init(Cector* d)
+void Cector_init(Cector* v)
 {
-    d->current_size = d->count = 0;
-    d->content = (char**)malloc((d->count + 1) * sizeof(char*));
+    v->current_size = v->count = 0;
+    v->content = (char**)malloc((v->count + 1) * sizeof(char*));
 }
 
-void Cector_pushback(Cector* d, char* item)
+void Cector_pushback(Cector* v, char* item)
 {
     size_t length = strlen(item);
-    size_t new_size = (d->count + 1) * sizeof(char*);
+    size_t new_size = (v->count + 1) * sizeof(char*);
 
-    d->content = (char**)realloc(d->content, new_size);
+    v->content = (char**)realloc(v->content, new_size);
 
-    if (!d->content == NULL)
+    if (!v->content == NULL)
     {
-        d->current_size = new_size;
-        d->content[d->count] = (char*)malloc(length * sizeof(char));
-        strcpy(d->content[d->count], item);
-        d->count++;
+        v->current_size = new_size;
+        v->content[v->count] = (char*)malloc(length * sizeof(char));
+        strcpy(v->content[v->count], item);
+        v->count++;
     }
 }
 
-const char* Cector_at(Cector* d, int index)
+void Cector_erase(Cector* v, int index)
 {
-    return d->content[index];
+    if(index <= v->count)
+    {
+        v->content[index] = NULL;
+        v->count--;
+        v->content = (char**)realloc(v->content, v->count * sizeof(char*));
+    }
 }
 
-void Cector_delete(Cector* d)
+const char* Cector_at(Cector* v, int index)
 {
-    free(d->content);
-    d->content = NULL;
-    d->count = d->current_size = 0;
+    return v->content[index];
 }
 
-size_t Cector_size(Cector* d)
+void Cector_delete(Cector* v)
 {
-    return d->count;
+    free(v->content);
+    v->content = NULL;
+    v->count = v->current_size = 0;
+}
+
+size_t Cector_size(Cector* v)
+{
+    return v->count;
 }
