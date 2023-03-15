@@ -3,12 +3,14 @@
 int main()
 {
     int i;
-    LVector lumia_history;
-    LVector_init(&lumia_history);
+    Cector vec;
+    Cector_init(&vec);
 
-    LVector_pushback(&lumia_history, "Test");
+    Cector_pushback(&vec, "Test");
 
-    LVector_delete(&lumia_history);
+    printf("%s\n", Cector_at(&vec, 0));
+
+    Cector_delete(&vec);
 
     return 0;
 }
