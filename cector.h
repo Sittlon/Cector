@@ -2,59 +2,90 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct Cector
+#define Cector(vec) vector vec; \
+                     Cector_init(&vec)
+
+
+typedef struct Cector vector;
+struct Cector
 {
     size_t count;
     size_t current_size;
-    char** content;
-} Cector;
+    void** content;
 
+    int (*size)(vector *);
+    int (*resize)(vector *, int);
+    int (*pushback)(vector *, void *);
+    int (*set)(vector *, int, void *);
+    void *(*at)(vector *, int);
+    int (*remove)(vector *, int);
+    int (*delete)(vector *);
+};
 
-void Cector_init(Cector* v)
+void Cector_pushback(vector* v, void* item)
 {
-    v->current_size = v->count = 0;
-    v->content = (char**)malloc((v->count + 1) * sizeof(char*));
-}
+    size_t new_size = (v->count + 1) * sizeof(void*);
+    void** newMem = realloc(v->content, new_size);
 
-void Cector_pushback(Cector* v, char* item)
-{
-    size_t length = strlen(item);
-    size_t new_size = (v->count + 1) * sizeof(char*);
-
-    v->content = (char**)realloc(v->content, new_size);
-
-    if (!v->content == NULL)
+    if (newMem)
     {
+        v->content = newMem;
         v->current_size = new_size;
-        v->content[v->count] = (char*)malloc(length * sizeof(char));
-        strcpy(v->content[v->count], item);
-        v->count++;
+        v->content[v->count++] = item;
     }
 }
 
-void Cector_erase(Cector* v, int index)
+void Cector_remove(vector* v, int index)
 {
     if(index <= v->count)
     {
         v->content[index] = NULL;
         v->count--;
-        v->content = (char**)realloc(v->content, v->count * sizeof(char*));
+        void** newMem = realloc(v->content, v->count * sizeof(void*));
+
+        if(newMem)
+        {
+            v->content = newMem;
+        }
     }
 }
 
-const char* Cector_at(Cector* v, int index)
+void* Cector_at(vector* v, int index)
 {
-    return v->content[index];
+    void* data = NULL;
+
+    if((v->count - 1) >= index && index >= 0)
+    {
+        data = v->content[index];
+    }
+    
+    return data;
 }
 
-void Cector_delete(Cector* v)
+int Cector_delete(vector* v)
 {
     free(v->content);
     v->content = NULL;
     v->count = v->current_size = 0;
+
+    return 0;
 }
 
-size_t Cector_size(Cector* v)
+int Cector_size(vector* v)
 {
     return v->count;
+}
+
+void Cector_init(vector* v)
+{
+    v->size = Cector_size;
+    //v->resize = ;
+    v->pushback = Cector_pushback;
+    //v->set = ;
+    v->at = Cector_at;
+    v->remove = Cector_remove;
+    v->delete = Cector_delete;
+
+    v->current_size = v->count = 0;
+    v->content = malloc((v->count + 1) * sizeof(void*));
 }
