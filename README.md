@@ -15,12 +15,16 @@ int main()
 {
     Cector(v);
 
+    //adds "test" to the end of the array
     v.pushback(&v, "test");
-
+    
+    //prints the data at index 0 of the array
     printf("%s\n", v.at(&v, 0));
 
+    //removes the item at index 0 of the array
     v.remove(&v, 0);
 
+    //deletes the array and frees the memory
     v.delete(&v);
 
     return 0;
